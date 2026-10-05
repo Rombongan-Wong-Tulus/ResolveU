@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "ResolveU",
+    "slug": "resolveu",
+    "scheme": "resolveu",
+    "userInterfaceStyle": "dark",
+    "plugins": [
+      "expo-router",
+      "expo-status-bar"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
