@@ -20,7 +20,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.canvas,
   },
   container: {
-    flex: 1,
     padding: 20,
   },
   header: {
@@ -75,16 +74,10 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: 8,
   },
-  submitButtonPressed: {
-    backgroundColor: colors.primary,
-  },
   submitText: {
     color: colors.onPrimary,
     fontSize: 14,
     fontWeight: "600",
-  },
-  listContent: {
-    paddingBottom: 20,
   },
   listTitle: {
     marginBottom: 12,
