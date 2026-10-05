@@ -1,5 +1,8 @@
-export type Kategori = "WiFi" | "Komputer" | "Printer" | "Akun";
-export type Status = "Open" | "Proses" | "Selesai";
+export const KATEGORI = ["WiFi", "Komputer", "Printer", "Akun"] as const;
+export type Kategori = (typeof KATEGORI)[number];
+
+export const STATUS = ["Open", "Proses", "Selesai"] as const;
+export type Status = (typeof STATUS)[number];
 
 export interface Tiket {
   id: string;
@@ -36,3 +39,7 @@ export const tiketAwal: Tiket[] = [
     status: "Selesai",
   },
 ];
+
+export function isKategori(value: string): value is Kategori {
+  return KATEGORI.includes(value as Kategori);
+}
