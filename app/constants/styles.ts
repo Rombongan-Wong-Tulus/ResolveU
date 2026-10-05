@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const colors = {
   canvas: "#010102",
   surface1: "#0f1011",
+  surface2: "#141516",
   ink: "#f7f8f8",
   inkMuted: "#d0d6e0",
   inkSubtle: "#8a8f98",
@@ -59,6 +60,48 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.hairline,
     borderRadius: 8,
+    color: colors.ink,
+    fontSize: 16,
+  },
+  categoryField: {
+    marginBottom: 12,
+  },
+  categorySelector: {
+    minHeight: 48,
+    justifyContent: "center",
+    padding: 12,
+    backgroundColor: colors.surface1,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 8,
+  },
+  categoryPlaceholderText: {
+    color: colors.inkSubtle,
+    fontSize: 16,
+  },
+  categorySelectedText: {
+    color: colors.ink,
+    fontSize: 16,
+  },
+  categoryOptions: {
+    marginTop: 8,
+    backgroundColor: colors.surface1,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  categoryOption: {
+    minHeight: 44,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.hairline,
+  },
+  categoryOptionSelected: {
+    backgroundColor: colors.surface2,
+  },
+  categoryOptionText: {
     color: colors.ink,
     fontSize: 16,
   },

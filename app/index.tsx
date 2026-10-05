@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
-import { isKategori, Kategori, Status, Tiket, tiketAwal } from "./constants/data";
+import { isKategori, KATEGORI, Kategori, Status, Tiket, tiketAwal } from "./constants/data";
 import { colors, styles } from "./constants/styles";
 
 const STATUS_COLORS: Record<Status, string> = {
@@ -23,21 +23,11 @@ const FORM_AWAL: FormTiket = {
   kategori: "",
 };
 
-function normalizeKategori(value: string): string {
-  const map: Record<string, string> = {
-    wifi: "WiFi",
-    komputer: "Komputer",
-    printer: "Printer",
-    akun: "Akun",
-  };
-  return map[value.toLowerCase().trim()] ?? value.trim();
-}
-
 function getErrorMsg(form: FormTiket): string {
   if (!form.nama.trim()) return "Nama pelapor tidak boleh kosong.";
   if (!form.ruangan.trim()) return "Ruangan tidak boleh kosong.";
   if (!form.deskripsi.trim()) return "Deskripsi masalah tidak boleh kosong.";
-  if (!isKategori(normalizeKategori(form.kategori))) return "Kategori harus: WiFi, Komputer, Printer, atau Akun.";
+  if (!isKategori(form.kategori)) return "Pilih salah satu kategori yang tersedia.";
   return "";
 }
 
@@ -46,17 +36,17 @@ function formValid(form: FormTiket): boolean {
     form.nama.trim() &&
       form.ruangan.trim() &&
       form.deskripsi.trim() &&
-      isKategori(normalizeKategori(form.kategori)),
+      isKategori(form.kategori),
   );
 }
 
-function buatTiket(form: FormTiket): Tiket {
+function buatTiket(form: FormTiket, kategori: Kategori): Tiket {
   return {
     id: Date.now().toString(),
     nama: form.nama.trim(),
     ruangan: form.ruangan.trim(),
     deskripsi: form.deskripsi.trim(),
-    kategori: normalizeKategori(form.kategori) as Kategori,
+    kategori,
     status: "Open",
   };
 }
@@ -90,6 +80,8 @@ function FormTiketView({
   isValid: boolean;
   errorMsg: string;
 }) {
+  const [kategoriTerbuka, setKategoriTerbuka] = useState(false);
+
   return (
     <View style={styles.formCard}>
       <Text style={styles.formTitle}>Buat tiket baru</Text>
@@ -115,13 +107,42 @@ function FormTiketView({
         value={form.deskripsi}
         onChangeText={(value) => onChange("deskripsi", value)}
       />
-      <TextInput
-        placeholder="Kategori: WiFi, Komputer, Printer, atau Akun"
-        placeholderTextColor={colors.inkSubtle}
-        style={styles.input}
-        value={form.kategori}
-        onChangeText={(value) => onChange("kategori", value)}
-      />
+      <View style={styles.categoryField}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: kategoriTerbuka }}
+          onPress={() => setKategoriTerbuka((isOpen) => !isOpen)}
+          style={styles.categorySelector}
+        >
+          <Text style={form.kategori ? styles.categorySelectedText : styles.categoryPlaceholderText}>
+            {form.kategori || "Pilih kategori"}
+          </Text>
+        </Pressable>
+        {kategoriTerbuka && (
+          <View style={styles.categoryOptions}>
+            <FlatList
+              data={KATEGORI}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    onChange("kategori", item);
+                    setKategoriTerbuka(false);
+                  }}
+                  style={[
+                    styles.categoryOption,
+                    form.kategori === item && styles.categoryOptionSelected,
+                  ]}
+                >
+                  <Text style={styles.categoryOptionText}>{item}</Text>
+                </Pressable>
+              )}
+              scrollEnabled={false}
+            />
+          </View>
+        )}
+      </View>
       {errorMsg.length > 0 && (
         <Text style={styles.errorText}>{errorMsg}</Text>
       )}
@@ -150,9 +171,10 @@ export default function Index() {
 
   const kirimTiket = () => {
     setSubmitted(true);
-    if (!valid) return;
+    const kategori = form.kategori;
+    if (!valid || !isKategori(kategori)) return;
 
-    setTiket((currentTiket) => [buatTiket(form), ...currentTiket]);
+    setTiket((currentTiket) => [buatTiket(form, kategori), ...currentTiket]);
     setForm(FORM_AWAL);
     setSubmitted(false);
   };
