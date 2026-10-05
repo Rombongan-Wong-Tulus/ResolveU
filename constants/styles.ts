@@ -16,6 +16,9 @@ export const colors = {
 } as const;
 
 export const styles = StyleSheet.create({
+  safeAreaProvider: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: colors.canvas,

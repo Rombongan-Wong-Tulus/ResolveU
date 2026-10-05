@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
-import { isKategori, KATEGORI, Kategori, Status, Tiket, tiketAwal } from "./constants/data";
-import { colors, styles } from "./constants/styles";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { isKategori, KATEGORI, Kategori, Status, Tiket, tiketAwal } from "../constants/data";
+import { colors, styles } from "../constants/styles";
 
 const STATUS_COLORS: Record<Status, string> = {
   Open: colors.open,
@@ -180,32 +181,34 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <FlatList
-        style={{ flex: 1 }}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.container}
-        data={tiket}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          <View>
-            <View style={styles.header}>
-              <Text style={styles.title}>ResolveU</Text>
-              <Text style={styles.subtitle}>Helpdesk IT Kampus</Text>
+    <SafeAreaProvider style={styles.safeAreaProvider}>
+      <SafeAreaView style={styles.safeArea}>
+        <FlatList
+          style={{ flex: 1 }}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.container}
+          data={tiket}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            <View>
+              <View style={styles.header}>
+                <Text style={styles.title}>ResolveU</Text>
+                <Text style={styles.subtitle}>Helpdesk IT Kampus</Text>
+              </View>
+              <FormTiketView
+                form={form}
+                onChange={updateForm}
+                onSubmit={kirimTiket}
+                isValid={valid}
+                errorMsg={errorMsg}
+              />
+              <Text style={styles.listTitle}>Daftar Tiket</Text>
             </View>
-            <FormTiketView
-              form={form}
-              onChange={updateForm}
-              onSubmit={kirimTiket}
-              isValid={valid}
-              errorMsg={errorMsg}
-            />
-            <Text style={styles.listTitle}>Daftar Tiket</Text>
-          </View>
-        }
-        ListEmptyComponent={<Text style={styles.emptyText}>Belum ada tiket.</Text>}
-        renderItem={renderTiketCard}
-      />
-    </SafeAreaView>
+          }
+          ListEmptyComponent={<Text style={styles.emptyText}>Belum ada tiket.</Text>}
+          renderItem={renderTiketCard}
+        />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
