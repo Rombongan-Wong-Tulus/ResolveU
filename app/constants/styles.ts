@@ -130,4 +130,13 @@ export const styles = StyleSheet.create({
     color: colors.inkSubtle,
     fontSize: 14,
   },
+  errorText: {
+    marginBottom: 10,
+    color: "#ef4444",
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  submitButtonDisabled: {
+    opacity: 0.45,
+  },
 });

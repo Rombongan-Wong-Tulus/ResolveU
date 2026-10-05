@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
 import { isKategori, Kategori, Status, Tiket, tiketAwal } from "./constants/data";
 import { colors, styles } from "./constants/styles";
 
@@ -23,12 +23,30 @@ const FORM_AWAL: FormTiket = {
   kategori: "",
 };
 
+function normalizeKategori(value: string): string {
+  const map: Record<string, string> = {
+    wifi: "WiFi",
+    komputer: "Komputer",
+    printer: "Printer",
+    akun: "Akun",
+  };
+  return map[value.toLowerCase().trim()] ?? value.trim();
+}
+
+function getErrorMsg(form: FormTiket): string {
+  if (!form.nama.trim()) return "Nama pelapor tidak boleh kosong.";
+  if (!form.ruangan.trim()) return "Ruangan tidak boleh kosong.";
+  if (!form.deskripsi.trim()) return "Deskripsi masalah tidak boleh kosong.";
+  if (!isKategori(normalizeKategori(form.kategori))) return "Kategori harus: WiFi, Komputer, Printer, atau Akun.";
+  return "";
+}
+
 function formValid(form: FormTiket): boolean {
   return Boolean(
     form.nama.trim() &&
       form.ruangan.trim() &&
       form.deskripsi.trim() &&
-      isKategori(form.kategori.trim()),
+      isKategori(normalizeKategori(form.kategori)),
   );
 }
 
@@ -38,7 +56,7 @@ function buatTiket(form: FormTiket): Tiket {
     nama: form.nama.trim(),
     ruangan: form.ruangan.trim(),
     deskripsi: form.deskripsi.trim(),
-    kategori: form.kategori.trim() as Kategori,
+    kategori: normalizeKategori(form.kategori) as Kategori,
     status: "Open",
   };
 }
@@ -59,10 +77,18 @@ function renderTiketCard({ item }: { item: Tiket }) {
   );
 }
 
-function FormTiketView({ form, onChange, onSubmit }: {
+function FormTiketView({
+  form,
+  onChange,
+  onSubmit,
+  isValid,
+  errorMsg,
+}: {
   form: FormTiket;
   onChange: (field: keyof FormTiket, value: string) => void;
   onSubmit: () => void;
+  isValid: boolean;
+  errorMsg: string;
 }) {
   return (
     <View style={styles.formCard}>
@@ -96,7 +122,14 @@ function FormTiketView({ form, onChange, onSubmit }: {
         value={form.kategori}
         onChangeText={(value) => onChange("kategori", value)}
       />
-      <Pressable accessibilityRole="button" onPress={onSubmit} style={styles.submitButton}>
+      {errorMsg.length > 0 && (
+        <Text style={styles.errorText}>{errorMsg}</Text>
+      )}
+      <Pressable
+        accessibilityRole="button"
+        onPress={onSubmit}
+        style={[styles.submitButton, !isValid && styles.submitButtonDisabled]}
+      >
         <Text style={styles.submitText}>Kirim Tiket</Text>
       </Pressable>
     </View>
@@ -106,23 +139,29 @@ function FormTiketView({ form, onChange, onSubmit }: {
 export default function Index() {
   const [tiket, setTiket] = useState<Tiket[]>(tiketAwal);
   const [form, setForm] = useState<FormTiket>(FORM_AWAL);
+  const [submitted, setSubmitted] = useState(false);
+
+  const valid = formValid(form);
+  const errorMsg = submitted ? getErrorMsg(form) : "";
 
   const updateForm = (field: keyof FormTiket, value: string) => {
     setForm((currentForm) => ({ ...currentForm, [field]: value }));
   };
 
   const kirimTiket = () => {
-    if (!formValid(form)) {
-      return;
-    }
+    setSubmitted(true);
+    if (!valid) return;
 
     setTiket((currentTiket) => [buatTiket(form), ...currentTiket]);
     setForm(FORM_AWAL);
+    setSubmitted(false);
   };
 
   return (
-    <View style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
       <FlatList
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.container}
         data={tiket}
         keyExtractor={(item) => item.id}
@@ -132,13 +171,19 @@ export default function Index() {
               <Text style={styles.title}>ResolveU</Text>
               <Text style={styles.subtitle}>Helpdesk IT Kampus</Text>
             </View>
-            <FormTiketView form={form} onChange={updateForm} onSubmit={kirimTiket} />
+            <FormTiketView
+              form={form}
+              onChange={updateForm}
+              onSubmit={kirimTiket}
+              isValid={valid}
+              errorMsg={errorMsg}
+            />
             <Text style={styles.listTitle}>Daftar Tiket</Text>
           </View>
         }
         ListEmptyComponent={<Text style={styles.emptyText}>Belum ada tiket.</Text>}
         renderItem={renderTiketCard}
       />
-    </View>
+    </SafeAreaView>
   );
 }
