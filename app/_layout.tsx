@@ -8,6 +8,7 @@ export default function Layout() {
       <Stack screenOptions={headerOptions}>
         <Stack.Screen name="index" options={{ title: "ResolveU" }} />
         <Stack.Screen name="buat" options={{ title: "Buat Tiket" }} />
+        <Stack.Screen name="tiket/[id]" options={{ title: "Detail Tiket" }} />
       </Stack>
     </TiketProvider>
   );
