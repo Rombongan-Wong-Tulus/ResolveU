@@ -233,6 +233,18 @@ export const styles = StyleSheet.create({
     color: colors.inkMuted,
     fontSize: 12,
   },
+  notificationBanner: {
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: colors.surface1,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 8,
+  },
+  notificationText: {
+    color: colors.ink,
+    fontSize: 14,
+  },
   deskripsiBlock: {
     marginTop: 12,
   },
