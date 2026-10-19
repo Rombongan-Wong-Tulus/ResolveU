@@ -32,7 +32,7 @@ export const tiketAwal: Tiket[] = [
   },
   {
     id: "3",
-    nama: "Sari",
+    nama: "Mario",
     ruangan: "Lab 2",
     kategori: "Akun",
     deskripsi: "Tidak bisa login akun kampus",

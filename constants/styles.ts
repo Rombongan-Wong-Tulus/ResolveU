@@ -15,6 +15,13 @@ export const colors = {
   selesai: "#27a644",
 } as const;
 
+export const headerOptions = {
+  headerStyle: { backgroundColor: colors.canvas },
+  headerTintColor: colors.ink,
+  headerTitleStyle: { color: colors.ink },
+  headerShadowVisible: false,
+} as const;
+
 export const styles = StyleSheet.create({
   safeAreaProvider: {
     flex: 1,
