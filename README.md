@@ -15,7 +15,7 @@ Tidak ada database atau layanan API. Data tiket saat ini disimpan di state React
 ## Menjalankan Project
 
 ```bash
-npm install
+npm ci
 npx expo start
 ```
 
@@ -43,16 +43,27 @@ npm run web
    - `Open`: merah
    - `Proses`: orange
    - `Selesai`: hijau
+7. Memfilter tiket berdasarkan status melalui parameter URL.
+8. Membuat tiket dalam modal, dengan aksi kirim dan batal.
+9. Menampilkan notifikasi sementara setelah tiket dibuat atau status diperbarui.
+10. Menampilkan halaman tidak ditemukan untuk URL yang tidak cocok.
 
 ## Struktur Folder
 
 ```text
 ResolveU/
 ├── app/
+│   ├── _layout.tsx
 │   ├── index.tsx
-│   └── constants/
-│       ├── data.ts
-│       └── styles.ts
+│   ├── buat.tsx
+│   ├── [...unmatched].tsx
+│   └── tiket/
+│       └── [id].tsx
+├── constants/
+│   ├── data.ts
+│   └── styles.ts
+├── context/
+│   └── TiketContext.tsx
 ├── app.json
 ├── babel.config.js
 ├── package.json
@@ -63,56 +74,42 @@ ResolveU/
 
 ## Penjelasan Kode
 
+### `app/_layout.tsx`
+
+Membungkus route dengan `TiketProvider` dan mengatur Stack untuk beranda, modal buat tiket, detail, dan catch-all.
+
 ### `app/index.tsx`
 
-File ini adalah layar utama aplikasi.
+Layar daftar menggunakan `useContext` lewat `useTiket`, `useMemo` untuk filter dan hitungan, serta `FlatList` untuk tiket. Filter disimpan lewat `router.setParams`; notifikasi dihapus dengan `useEffect` setelah 2,5 detik.
 
-- `FormTiket` menyatukan empat nilai input form dalam satu tipe.
-- `FORM_AWAL` menjadi nilai awal dan nilai reset form.
-- `formValid()` memeriksa field kosong dan memastikan kategori valid.
-- `buatTiket()` mengubah data form menjadi objek `Tiket` baru.
-- `renderTiketCard()` menjadi renderer tunggal untuk setiap item pada `FlatList`.
-- `FormTiketView` menangani tampilan form agar komponen utama tetap ringkas.
-- `updateForm()` memperbarui satu field form tanpa mengulang setter terpisah.
-- `kirimTiket()` memvalidasi form, menambahkan tiket di bagian paling atas, lalu mereset form.
+### `app/buat.tsx`
 
-### `app/constants/data.ts`
+Form memakai `useState` dan validasi sebelum menambah tiket ke context. `useEffect` menghapus error ketika isi form berubah. Kirim dan Batal menutup modal dengan `router.dismiss()`.
 
-File ini berisi model data dan data awal aplikasi.
+### `app/tiket/[id].tsx` dan `app/[...unmatched].tsx`
 
-- `KATEGORI` adalah daftar kategori yang didukung.
-- `Kategori` dibuat dari daftar kategori tersebut sehingga tipe dan validasi memakai sumber yang sama.
-- `STATUS` dan `Status` mendefinisikan status tiket.
-- `Tiket` mendefinisikan bentuk data tiket.
-- `tiketAwal` berisi tiga tiket dummy.
-- `isKategori()` menjadi type guard untuk memeriksa input kategori sebelum dipakai sebagai `Kategori`.
+Halaman detail membaca ID melalui `useLocalSearchParams`, mengubah status bertahap, dan kembali dengan `router.back()` atau `router.replace("/")`. Catch-all menampilkan path yang diminta dan menyediakan navigasi kembali ke beranda.
 
-### `app/constants/styles.ts`
+### `constants/`, `context/`
 
-File ini menjadi pusat styling aplikasi.
+`constants/data.ts` berisi tipe, data awal, dan fungsi validasi status/kategori. `constants/styles.ts` menyimpan token dan seluruh style. `context/TiketContext.tsx` mengelola data tiket dan pesan bersama dengan `useState`.
 
-- `colors` menyimpan token warna dari `DESIGN.md`.
-- `styles` menyimpan semua style menggunakan `StyleSheet.create()`.
-- Warna status badge dipilih melalui `STATUS_COLORS` di `app/index.tsx`, sedangkan penggunaan warna background badge tetap menjadi satu-satunya inline style sesuai aturan project.
-- Tidak ada shadow, elevation, gradient, atau warna dekoratif tambahan.
-
-## Alur Submit Tiket
+## Alur Navigasi dan Submit
 
 ```text
-Input form
-  -> formValid()
-  -> buatTiket()
-  -> setTiket()
-  -> reset form
+Beranda (/) -> Buat Tiket (modal) -> Kirim -> tiket ditambahkan di urutan teratas
+                              -> Batal -> modal ditutup tanpa perubahan
+Beranda -> Detail tiket -> Ubah status -> Kembali ke daftar
+URL tidak dikenal -> Halaman tidak ditemukan -> Kembali ke Beranda
 ```
 
-Jika satu field kosong atau kategori tidak sesuai, tiket tidak dibuat dan data form tetap dipertahankan agar dapat diperbaiki.
+Setelah kirim valid atau status berubah, banner notifikasi tampil selama 2,5 detik. Filter status tetap berada di URL beranda.
 
 ## Catatan Maintenance
 
-- Tambah kategori baru di `KATEGORI` pada `app/constants/data.ts`.
+- Tambah kategori baru di `KATEGORI` pada `constants/data.ts`.
 - Tambah status baru harus dilakukan di `STATUS`, lalu tambahkan warna status tersebut di `STATUS_COLORS`.
-- Ubah warna atau ukuran tampilan di `app/constants/styles.ts`, bukan di komponen.
+- Ubah warna atau ukuran tampilan di `constants/styles.ts`, bukan di komponen.
 - Ubah data awal hanya di `tiketAwal`.
 - Pertahankan penggunaan `FlatList` untuk daftar data dan jangan menggantinya dengan `.map()`.
 - `AGENTS.md` dan `DESIGN.md` adalah sumber aturan implementasi dan desain.
@@ -121,5 +118,5 @@ Jika satu field kosong atau kategori tidak sesuai, tiket tidak dibuat dan data f
 
 ```bash
 npx tsc --noEmit
-npx expo-doctor
+npx expo export --platform web --output-dir /tmp/resolveu-check
 ```

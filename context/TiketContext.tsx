@@ -5,12 +5,15 @@ interface TiketContextValue {
   tiket: Tiket[];
   tambahTiket: (tiket: Tiket) => void;
   ubahStatus: (id: string, status: Status) => void;
+  pesan: string;
+  setPesan: (pesan: string) => void;
 }
 
 const TiketContext = createContext<TiketContextValue | undefined>(undefined);
 
 export function TiketProvider({ children }: { children: ReactNode }) {
   const [tiket, setTiket] = useState<Tiket[]>(tiketAwal);
+  const [pesan, setPesan] = useState("");
 
   const tambahTiket = (tiketBaru: Tiket) => {
     setTiket((tiketSaatIni) => [tiketBaru, ...tiketSaatIni]);
@@ -23,7 +26,7 @@ export function TiketProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <TiketContext.Provider value={{ tiket, tambahTiket, ubahStatus }}>
+    <TiketContext.Provider value={{ tiket, tambahTiket, ubahStatus, pesan, setPesan }}>
       {children}
     </TiketContext.Provider>
   );
