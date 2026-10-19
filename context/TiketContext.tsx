@@ -26,7 +26,9 @@ export function TiketProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <TiketContext.Provider value={{ tiket, tambahTiket, ubahStatus, pesan, setPesan }}>
+    <TiketContext.Provider
+      value={{ tiket, tambahTiket, ubahStatus, pesan, setPesan }}
+    >
       {children}
     </TiketContext.Provider>
   );
