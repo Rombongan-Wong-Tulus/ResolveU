@@ -13,14 +13,14 @@ Design: Linear dark theme (lihat DESIGN.md)
 - SEMUA style lewat `StyleSheet.create()` di `app/constants/styles.ts`
 - Inline style HANYA untuk warna background status badge
 - WAJIB pakai token dari `DESIGN.md`. Jangan hardcode warna baru.
-- DARK THEME wajib:
-  - Canvas / background: `#010102` (token `colors.canvas`)
-  - Card surface: `#0f1011` (token `colors.surface-1`)
-  - Text utama: `#f7f8f8` (token `colors.ink`)
-  - Text muted: `#d0d6e0` (token `colors.ink-muted`)
-  - Text subtle: `#8a8f98` (token `colors.ink-subtle`)
-  - Border: `#23252a` (token `colors.hairline`)
-  - Primary / CTA: `#5e6ad2` (token `colors.primary`)
+- TEMA default mengikuti perangkat; palet gelap dan terang didefinisikan di `constants/styles.ts` (`colorsDark`, `colorsLight`). Palet gelap tetap acuan DESIGN.md.
+  - Canvas / background: `#010102` (token `colorsDark.canvas`)
+  - Card surface: `#0f1011` (token `colorsDark.surface-1`)
+  - Text utama: `#f7f8f8` (token `colorsDark.ink`)
+  - Text muted: `#d0d6e0` (token `colorsDark.inkMuted`)
+  - Text subtle: `#8a8f98` (token `colorsDark.inkSubtle`)
+  - Border: `#23252a` (token `colorsDark.hairline`)
+  - Primary / CTA: `#5e6ad2` (token `colorsDark.primary`)
 - DILARANG pakai drop shadow / elevation. Linear depth = surface ladder + hairline border.
 - DILARANG pakai gradient, spotlight card, atau warna chromatic kedua.
 - DILARANG pakai emoji di UI.
@@ -66,6 +66,8 @@ mendokumentasikannya sebagai warna in-product Linear (Known Gaps).
 - `context/TiketContext.tsx`
 - `constants/data.ts`
 - `constants/styles.ts`
+- `context/ThemeContext.tsx` (ContextTema)
 
 ## Modul 2
 Modul 2 mengizinkan expo-router (Stack, Link, router), React Hooks (useState, useEffect, useMemo, useContext, useRef), dan Context API.
+`useColorScheme` dari react-native boleh dipakai untuk membaca tema perangkat pada ContextTema.

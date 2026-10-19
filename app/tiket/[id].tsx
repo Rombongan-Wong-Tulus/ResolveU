@@ -3,12 +3,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { statusBerikutnya } from "../../constants/data";
 import { useTiket } from "../../context/TiketContext";
-import { STATUS_COLORS, styles } from "../../constants/styles";
+import { useTema } from "../../context/ThemeContext";
+import { STATUS_COLORS } from "../../constants/styles";
 
 export default function DetailTiket() {
   // Hook mengambil id dari URL, misal /tiket/1 -> "1".
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { styles } = useTema();
   const { tiket, ubahStatus, setPesan } = useTiket();
   const tiketDitemukan = tiket.find((item) => item.id === id);
   const statusSelanjutnya = tiketDitemukan

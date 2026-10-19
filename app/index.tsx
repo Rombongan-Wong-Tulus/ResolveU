@@ -4,13 +4,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { isStatus, STATUS, Status, Tiket } from "../constants/data";
 import { useTiket } from "../context/TiketContext";
-import { STATUS_COLORS, styles } from "../constants/styles";
+import { useTema } from "../context/ThemeContext";
+import { STATUS_COLORS } from "../constants/styles";
 
 const OPSI_FILTER = ["Semua", ...STATUS] as const;
 type FilterStatus = (typeof OPSI_FILTER)[number];
 
 function KartuTiket({ item }: { item: Tiket }) {
   const router = useRouter();
+  const { styles } = useTema();
 
   // Router membuka halaman detail sesuai id tiket yang ditekan.
   return (
@@ -39,6 +41,7 @@ function KartuTiket({ item }: { item: Tiket }) {
 
 export default function Index() {
   const router = useRouter();
+  const { styles } = useTema();
 
   // Hook membaca filter status dari query param, misal /?status=Open.
   const { status } = useLocalSearchParams<{ status?: string }>();
