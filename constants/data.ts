@@ -32,7 +32,7 @@ export const tiketAwal: Tiket[] = [
   },
   {
     id: "3",
-    nama: "Sari",
+    nama: "Mario",
     ruangan: "Lab 2",
     kategori: "Akun",
     deskripsi: "Tidak bisa login akun kampus",
@@ -42,4 +42,15 @@ export const tiketAwal: Tiket[] = [
 
 export function isKategori(value: string): value is Kategori {
   return KATEGORI.includes(value as Kategori);
+}
+
+export function isStatus(value: string): value is Status {
+  return STATUS.includes(value as Status);
+}
+
+// Urutan status: Open -> Proses -> Selesai. Selesai adalah status akhir (null).
+export function statusBerikutnya(status: Status): Status | null {
+  if (status === "Open") return "Proses";
+  if (status === "Proses") return "Selesai";
+  return null;
 }

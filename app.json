@@ -3,7 +3,7 @@
     "name": "ResolveU",
     "slug": "resolveu",
     "scheme": "resolveu",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "plugins": [
       "expo-router",
       "expo-status-bar"
