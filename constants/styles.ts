@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { Status } from "./data";
 
 export const colors = {
   canvas: "#010102",
@@ -21,6 +22,13 @@ export const headerOptions = {
   headerTitleStyle: { color: colors.ink },
   headerShadowVisible: false,
 } as const;
+
+// Warna badge per status (dipakai di daftar tiket dan halaman detail).
+export const STATUS_COLORS: Record<Status, string> = {
+  Open: colors.open,
+  Proses: colors.proses,
+  Selesai: colors.selesai,
+};
 
 export const styles = StyleSheet.create({
   safeAreaProvider: {
@@ -191,5 +199,67 @@ export const styles = StyleSheet.create({
   },
   submitButtonDisabled: {
     opacity: 0.45,
+  },
+  filterContent: {
+    gap: 8,
+    paddingVertical: 4,
+  },
+  filterOption: {
+    minHeight: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    backgroundColor: colors.canvas,
+    borderWidth: 1,
+    borderColor: colors.canvas,
+    borderRadius: 9999,
+  },
+  filterOptionActive: {
+    backgroundColor: colors.surface2,
+    borderColor: colors.hairline,
+  },
+  filterOptionText: {
+    color: colors.inkSubtle,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  filterOptionTextActive: {
+    color: colors.ink,
+  },
+  filterSummary: {
+    marginTop: 8,
+    marginBottom: 12,
+    color: colors.inkMuted,
+    fontSize: 12,
+  },
+  deskripsiBlock: {
+    marginTop: 12,
+  },
+  buttonColumn: {
+    marginTop: 16,
+    gap: 12,
+  },
+  secondaryButton: {
+    minHeight: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 14,
+    backgroundColor: colors.surface1,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 8,
+  },
+  secondaryText: {
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  centeredContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+    padding: 20,
   },
 });
