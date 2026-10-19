@@ -274,4 +274,9 @@ export const styles = StyleSheet.create({
     gap: 16,
     padding: 20,
   },
+  linkText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: "600",
+  },
 });

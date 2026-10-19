@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { styles } from "../constants/styles";
 
 export default function HalamanTidakDitemukan() {
@@ -8,6 +8,7 @@ export default function HalamanTidakDitemukan() {
   const { unmatched } = useLocalSearchParams<{ unmatched: string[] }>();
   const path = Array.isArray(unmatched) ? `/${unmatched.join("/")}` : "/";
   const router = useRouter();
+
   // Router mengganti URL yang tidak dikenal dengan halaman utama.
   const kembaliKeBeranda = () => router.replace("/");
 
@@ -23,6 +24,10 @@ export default function HalamanTidakDitemukan() {
         >
           <Text style={styles.secondaryText}>Kembali ke Beranda</Text>
         </Pressable>
+        {/* Link dari expo-router untuk navigasi deklaratif ke beranda. */}
+        <Link href="/">
+          <Text style={styles.linkText}>Lihat daftar tiket</Text>
+        </Link>
       </View>
     </SafeAreaView>
   );
