@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -19,7 +19,7 @@ function formValid(form: FormTiket) { return Boolean(form.nama.trim() && form.ru
 function buatTiket(form: FormTiket, kategori: Kategori): Tiket {
   return { id: Date.now().toString(), nama: form.nama.trim(), ruangan: form.ruangan.trim(), deskripsi: form.deskripsi.trim(), kategori, status: "Open" };
 }
-function FormTiketView({ form, onChange, onSubmit, isValid, errorMsg }: { form: FormTiket; onChange: (field: keyof FormTiket, value: string) => void; onSubmit: () => void; isValid: boolean; errorMsg: string }) {
+function FormTiketView({ form, onChange, onSubmit, onCancel, isValid, errorMsg }: { form: FormTiket; onChange: (field: keyof FormTiket, value: string) => void; onSubmit: () => void; onCancel: () => void; isValid: boolean; errorMsg: string }) {
   const [kategoriTerbuka, setKategoriTerbuka] = useState(false);
   return <View style={styles.formCard}>
     <Text style={styles.formTitle}>Buat tiket baru</Text>
@@ -30,22 +30,32 @@ function FormTiketView({ form, onChange, onSubmit, isValid, errorMsg }: { form: 
       {kategoriTerbuka && <View style={styles.categoryOptions}><FlatList data={KATEGORI} keyExtractor={(item) => item} renderItem={({ item }) => <Pressable accessibilityRole="button" onPress={() => { onChange("kategori", item); setKategoriTerbuka(false); }} style={[styles.categoryOption, form.kategori === item && styles.categoryOptionSelected]}><Text style={styles.categoryOptionText}>{item}</Text></Pressable>} scrollEnabled={false} /></View>}
     </View>
     {errorMsg.length > 0 && <Text style={styles.errorText}>{errorMsg}</Text>}
-    <Pressable accessibilityRole="button" onPress={onSubmit} style={[styles.submitButton, !isValid && styles.submitButtonDisabled]}><Text style={styles.submitText}>Kirim Tiket</Text></Pressable>
+    <View style={styles.buttonColumn}>
+      <Pressable accessibilityRole="button" onPress={onSubmit} style={[styles.submitButton, !isValid && styles.submitButtonDisabled]}><Text style={styles.submitText}>Kirim Tiket</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={onCancel} style={styles.secondaryButton}><Text style={styles.secondaryText}>Batal</Text></Pressable>
+    </View>
   </View>;
 }
 export default function Buat() {
   const router = useRouter();
-  const { tambahTiket } = useTiket();
+  const { tambahTiket, setPesan } = useTiket();
   const [form, setForm] = useState<FormTiket>(FORM_AWAL);
   const [submitted, setSubmitted] = useState(false);
+  // Hook menghapus error setelah pengguna mulai memperbaiki form.
+  useEffect(() => {
+    if (submitted) setSubmitted(false);
+  }, [form]);
   const valid = formValid(form);
   const updateForm = (field: keyof FormTiket, value: string) => setForm((current) => ({ ...current, [field]: value }));
-  // Router kembali setelah tiket valid ditambahkan.
+  // Router menutup modal setelah tiket valid ditambahkan.
   const kirimTiket = () => {
     setSubmitted(true);
     if (!valid || !isKategori(form.kategori)) return;
     tambahTiket(buatTiket(form, form.kategori));
-    router.back();
+    setPesan("Tiket berhasil dikirim");
+    router.dismiss();
   };
-  return <SafeAreaView edges={["bottom"]} style={styles.safeArea}><View style={styles.container}><FormTiketView form={form} onChange={updateForm} onSubmit={kirimTiket} isValid={valid} errorMsg={submitted ? getErrorMsg(form) : ""} /></View></SafeAreaView>;
+  // Router membatalkan pembuatan dengan menutup modal.
+  const batal = () => router.dismiss();
+  return <SafeAreaView edges={["bottom"]} style={styles.safeArea}><View style={styles.container}><FormTiketView form={form} onChange={updateForm} onSubmit={kirimTiket} onCancel={batal} isValid={valid} errorMsg={submitted ? getErrorMsg(form) : ""} /></View></SafeAreaView>;
 }

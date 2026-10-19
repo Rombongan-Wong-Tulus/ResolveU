@@ -193,7 +193,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     marginBottom: 10,
-    color: "#ef4444",
+    color: colors.open,
     fontSize: 13,
     fontWeight: "500",
   },
@@ -232,6 +232,18 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
     color: colors.inkMuted,
     fontSize: 12,
+  },
+  notificationBanner: {
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: colors.surface1,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 8,
+  },
+  notificationText: {
+    color: colors.ink,
+    fontSize: 14,
   },
   deskripsiBlock: {
     marginTop: 12,

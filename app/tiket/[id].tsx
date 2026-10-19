@@ -9,13 +9,19 @@ export default function DetailTiket() {
   // Hook mengambil id dari URL, misal /tiket/1 -> "1".
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { tiket, ubahStatus } = useTiket();
+  const { tiket, ubahStatus, setPesan } = useTiket();
   const tiketDitemukan = tiket.find((item) => item.id === id);
   const statusSelanjutnya = tiketDitemukan ? statusBerikutnya(tiketDitemukan.status) : null;
   // Router kembali ke halaman sebelumnya; kalau tidak ada riwayat, ganti ke daftar.
   const kembali = () => {
     if (router.canGoBack()) router.back();
     else router.replace("/");
+  };
+  // Status diperbarui bersama notifikasi untuk ditampilkan di daftar.
+  const perbaruiStatus = () => {
+    if (!tiketDitemukan || !statusSelanjutnya) return;
+    ubahStatus(tiketDitemukan.id, statusSelanjutnya);
+    setPesan("Status tiket diperbarui");
   };
   if (!tiketDitemukan) {
     return <SafeAreaView edges={["bottom"]} style={styles.safeArea}><View style={styles.centeredContainer}><Text style={styles.emptyText}>Tiket tidak ditemukan</Text><Pressable accessibilityRole="button" onPress={kembali} style={styles.secondaryButton}><Text style={styles.secondaryText}>Kembali</Text></Pressable></View></SafeAreaView>;
@@ -28,7 +34,7 @@ export default function DetailTiket() {
       <View style={styles.deskripsiBlock}><Text style={styles.ticketDescription}>{tiketDitemukan.deskripsi}</Text></View>
     </View>
     <View style={styles.buttonColumn}>
-      {statusSelanjutnya && <Pressable accessibilityRole="button" onPress={() => ubahStatus(tiketDitemukan.id, statusSelanjutnya)} style={styles.submitButton}><Text style={styles.submitText}>Ubah ke {statusSelanjutnya}</Text></Pressable>}
+      {statusSelanjutnya && <Pressable accessibilityRole="button" onPress={perbaruiStatus} style={styles.submitButton}><Text style={styles.submitText}>Ubah ke {statusSelanjutnya}</Text></Pressable>}
       <Pressable accessibilityRole="button" onPress={kembali} style={styles.secondaryButton}><Text style={styles.secondaryText}>Kembali</Text></Pressable>
     </View>
   </View></SafeAreaView>;
