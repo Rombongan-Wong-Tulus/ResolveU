@@ -11,7 +11,7 @@ type FilterStatus = (typeof OPSI_FILTER)[number];
 function KartuTiket({ item }: { item: Tiket }) {
   const router = useRouter();
   // Router membuka halaman detail sesuai id tiket yang ditekan.
-  return <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: "/tiket/[id]", params: { id: item.id } })} style={styles.ticketCard}><View style={styles.ticketHeader}><Text style={styles.ticketName}>{item.nama}</Text><View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[item.status] }]}><Text style={styles.statusText}>{item.status}</Text></View></View><Text style={styles.ticketDetail}>Ruangan: {item.ruangan}</Text><Text style={styles.ticketDetail}>Kategori: {item.kategori}</Text><Text style={styles.ticketDescription}>{item.deskripsi}</Text></Pressable>;
+  return <Pressable accessibilityRole="button" onPress={() => router.push(`/tiket/${item.id}`)} style={styles.ticketCard}><View style={styles.ticketHeader}><Text style={styles.ticketName}>{item.nama}</Text><View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[item.status] }]}><Text style={styles.statusText}>{item.status}</Text></View></View><Text style={styles.ticketDetail}>Ruangan: {item.ruangan}</Text><Text style={styles.ticketDetail}>Kategori: {item.kategori}</Text><Text style={styles.ticketDescription}>{item.deskripsi}</Text></Pressable>;
 }
 export default function Index() {
   const router = useRouter();
