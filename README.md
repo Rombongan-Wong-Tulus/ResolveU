@@ -47,6 +47,7 @@ npm run web
 8. Membuat tiket dalam modal, dengan aksi kirim dan batal.
 9. Menampilkan notifikasi sementara setelah tiket dibuat atau status diperbarui.
 10. Menampilkan halaman tidak ditemukan untuk URL yang tidak cocok.
+11. Mode terang/gelap: tema awal mengikuti perangkat, bisa diganti lewat tombol di header.
 
 ## Struktur Folder
 
@@ -63,7 +64,8 @@ ResolveU/
 │   ├── data.ts
 │   └── styles.ts
 ├── context/
-│   └── TiketContext.tsx
+│   ├── TiketContext.tsx
+│   └── ThemeContext.tsx
 ├── app.json
 ├── babel.config.js
 ├── package.json
@@ -76,7 +78,7 @@ ResolveU/
 
 ### `app/_layout.tsx`
 
-Membungkus route dengan `TiketProvider` dan mengatur Stack untuk beranda, modal buat tiket, detail, dan catch-all.
+Membungkus route dengan `ThemeProvider` lalu `TiketProvider` dan mengatur Stack untuk beranda, modal buat tiket, detail, dan catch-all. Tombol tema ada di header beranda.
 
 ### `app/index.tsx`
 
@@ -92,7 +94,7 @@ Halaman detail membaca ID melalui `useLocalSearchParams`, mengubah status bertah
 
 ### `constants/`, `context/`
 
-`constants/data.ts` berisi tipe, data awal, dan fungsi validasi status/kategori. `constants/styles.ts` menyimpan token dan seluruh style. `context/TiketContext.tsx` mengelola data tiket dan pesan bersama dengan `useState`.
+`constants/data.ts` berisi tipe, data awal, dan fungsi validasi status/kategori. `constants/styles.ts` menyimpan dua palet warna (`colorsDark`, `colorsLight`) dan `buatStyles(colors)` yang membuat seluruh style untuk tema aktif. `context/TiketContext.tsx` mengelola data tiket dan pesan bersama dengan `useState`. `context/ThemeContext.tsx` (`ThemeProvider` + `useTema`) menyimpan pilihan tema, membaca `useColorScheme` dari perangkat, lalu menyediakan `colors` dan `styles` ke semua halaman.
 
 ## Alur Navigasi dan Submit
 
@@ -110,6 +112,7 @@ Setelah kirim valid atau status berubah, banner notifikasi tampil selama 2,5 det
 - Tambah kategori baru di `KATEGORI` pada `constants/data.ts`.
 - Tambah status baru harus dilakukan di `STATUS`, lalu tambahkan warna status tersebut di `STATUS_COLORS`.
 - Ubah warna atau ukuran tampilan di `constants/styles.ts`, bukan di komponen.
+- Palet terang/gelap ada di `colorsLight` dan `colorsDark`; pilihan tema disimpan di memori sehingga kembali mengikuti tema perangkat setelah aplikasi dimuat ulang.
 - Ubah data awal hanya di `tiketAwal`.
 - Pertahankan penggunaan `FlatList` untuk daftar data dan jangan menggantinya dengan `.map()`.
 - `AGENTS.md` dan `DESIGN.md` adalah sumber aturan implementasi dan desain.

@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { isKategori, KATEGORI, Kategori, Tiket } from "../constants/data";
 import { useTiket } from "../context/TiketContext";
-import { colors, styles } from "../constants/styles";
+import { useTema } from "../context/ThemeContext";
 
 interface FormTiket {
   nama: string;
@@ -71,6 +71,7 @@ function FormTiketView({
   refRuangan,
   refDeskripsi,
 }: FormTiketViewProps) {
+  const { styles, colors } = useTema();
   const [kategoriTerbuka, setKategoriTerbuka] = useState(false);
 
   return (
@@ -171,6 +172,7 @@ function FormTiketView({
 export default function Buat() {
   const router = useRouter();
   const { tambahTiket, setPesan } = useTiket();
+  const { styles } = useTema();
   const [form, setForm] = useState<FormTiket>(FORM_AWAL);
   const [submitted, setSubmitted] = useState(false);
   // Ref dipakai untuk mengarahkan fokus input; mengubah ref tidak memicu render ulang.

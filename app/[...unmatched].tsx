@@ -1,13 +1,14 @@
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import { styles } from "../constants/styles";
+import { useTema } from "../context/ThemeContext";
 
 export default function HalamanTidakDitemukan() {
   // Hook membaca segmen URL yang tidak cocok dengan route aplikasi.
   const { unmatched } = useLocalSearchParams<{ unmatched: string[] }>();
   const path = Array.isArray(unmatched) ? `/${unmatched.join("/")}` : "/";
   const router = useRouter();
+  const { styles } = useTema();
 
   // Router mengganti URL yang tidak dikenal dengan halaman utama.
   const kembaliKeBeranda = () => router.replace("/");
