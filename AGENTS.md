@@ -58,6 +58,14 @@ Khusus status badge: warna merah/orange/hijau DIIZINKAN karena DESIGN.md
 mendokumentasikannya sebagai warna in-product Linear (Known Gaps).
 
 ## Struktur file yang diharapkan
-- `app/index.tsx`              → komponen utama
-- `app/constants/styles.ts`    → StyleSheet
-- `app/constants/data.ts`      → type, interface, data dummy
+- `app/_layout.tsx`
+- `app/index.tsx`
+- `app/buat.tsx`
+- `app/tiket/[id].tsx` → dikerjakan di tahap berikutnya
+- `app/[...unmatched].tsx` → dikerjakan di tahap berikutnya
+- `context/TiketContext.tsx`
+- `constants/data.ts`
+- `constants/styles.ts`
+
+## Modul 2
+Modul 2 mengizinkan expo-router (Stack, Link, router), React Hooks (useState, useEffect, useMemo, useContext, useRef), dan Context API.
