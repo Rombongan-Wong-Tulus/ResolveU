@@ -5,19 +5,19 @@ import { statusBerikutnya } from "../../constants/data";
 import { useTiket } from "../../context/TiketContext";
 import { useTema } from "../../context/ThemeContext";
 import { STATUS_COLORS } from "../../constants/styles";
+import { Loading } from "../../components/Loading";
 
 export default function DetailTiket() {
   // Hook mengambil id dari URL, misal /tiket/1 -> "1".
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { styles } = useTema();
-  const { tiket, ubahStatus, setPesan } = useTiket();
+  const { tiket, loading, ubahStatus, setPesan } = useTiket();
   const tiketDitemukan = tiket.find((item) => item.id === id);
   const statusSelanjutnya = tiketDitemukan
     ? statusBerikutnya(tiketDitemukan.status)
     : null;
 
-  // Router kembali ke halaman sebelumnya; kalau tidak ada riwayat, ganti ke daftar.
   const kembali = () => {
     if (router.canGoBack()) router.back();
     else router.replace("/");
@@ -29,6 +29,15 @@ export default function DetailTiket() {
     ubahStatus(tiketDitemukan.id, statusSelanjutnya);
     setPesan("Status tiket diperbarui");
   };
+
+  // Tampilkan indikator saat data tiket sedang dimuat dari API.
+  if (loading) {
+    return (
+      <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
+        <Loading />
+      </SafeAreaView>
+    );
+  }
 
   if (!tiketDitemukan) {
     return (

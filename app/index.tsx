@@ -6,6 +6,8 @@ import { isStatus, STATUS, Status, Tiket } from "../constants/data";
 import { useTiket } from "../context/TiketContext";
 import { useTema } from "../context/ThemeContext";
 import { STATUS_COLORS } from "../constants/styles";
+import { Loading } from "../components/Loading";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 const OPSI_FILTER = ["Semua", ...STATUS] as const;
 type FilterStatus = (typeof OPSI_FILTER)[number];
@@ -45,7 +47,7 @@ export default function Index() {
 
   // Hook membaca filter status dari query param, misal /?status=Open.
   const { status } = useLocalSearchParams<{ status?: string }>();
-  const { tiket, pesan, setPesan } = useTiket();
+  const { tiket, loading, error, muatUlang, pesan, setPesan } = useTiket();
 
   // Hook menghilangkan notifikasi setelah 2,5 detik dan membatalkan timer saat pesan berubah.
   useEffect(() => {
@@ -77,6 +79,24 @@ export default function Index() {
   const pilihFilter = (pilihan: FilterStatus) => {
     router.setParams({ status: pilihan === "Semua" ? undefined : pilihan });
   };
+
+  // Tampilkan indikator saat data tiket sedang dimuat dari API.
+  if (loading) {
+    return (
+      <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
+        <Loading />
+      </SafeAreaView>
+    );
+  }
+
+  // Tampilkan pesan error dan tombol coba lagi jika gagal memuat tiket.
+  if (error) {
+    return (
+      <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
+        <ErrorMessage pesan={error} onCoba={muatUlang} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safeArea}>

@@ -205,6 +205,12 @@ export function buatStyles(colors: Palet) {
       fontSize: 13,
       fontWeight: "500",
     },
+    loadingText: {
+      marginTop: 8,
+      color: colors.inkSubtle,
+      fontSize: 14,
+      fontWeight: "400",
+    },
     submitButtonDisabled: {
       opacity: 0.45,
     },

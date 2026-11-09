@@ -13,33 +13,6 @@ export interface Tiket {
   status: Status;
 }
 
-export const tiketAwal: Tiket[] = [
-  {
-    id: "1",
-    nama: "Rico",
-    ruangan: "Lab 3",
-    kategori: "WiFi",
-    deskripsi: "Tidak bisa connect ke WiFi kampus",
-    status: "Open",
-  },
-  {
-    id: "2",
-    nama: "Dicky",
-    ruangan: "Lab 1",
-    kategori: "Printer",
-    deskripsi: "Printer error saat print",
-    status: "Proses",
-  },
-  {
-    id: "3",
-    nama: "Mario",
-    ruangan: "Lab 2",
-    kategori: "Akun",
-    deskripsi: "Tidak bisa login akun kampus",
-    status: "Selesai",
-  },
-];
-
 export function isKategori(value: string): value is Kategori {
   return KATEGORI.includes(value as Kategori);
 }
@@ -52,5 +25,6 @@ export function isStatus(value: string): value is Status {
 export function statusBerikutnya(status: Status): Status | null {
   if (status === "Open") return "Proses";
   if (status === "Proses") return "Selesai";
+  if (status === "Selesai") return null;
   return null;
 }
