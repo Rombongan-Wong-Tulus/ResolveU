@@ -175,12 +175,11 @@ export default function Buat() {
   const { styles } = useTema();
   const [form, setForm] = useState<FormTiket>(FORM_AWAL);
   const [submitted, setSubmitted] = useState(false);
-  // Ref dipakai untuk mengarahkan fokus input; mengubah ref tidak memicu render ulang.
+  
   const refNama = useRef<TextInput>(null);
   const refRuangan = useRef<TextInput>(null);
   const refDeskripsi = useRef<TextInput>(null);
 
-  // Hook menghapus error setelah pengguna mulai memperbaiki form.
   useEffect(() => {
     if (submitted) setSubmitted(false);
   }, [form]);
@@ -199,7 +198,6 @@ export default function Buat() {
     router.dismiss();
   };
 
-  // Router membatalkan pembuatan dengan menutup modal.
   const batal = () => router.dismiss();
 
   return (

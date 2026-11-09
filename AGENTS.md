@@ -67,7 +67,15 @@ mendokumentasikannya sebagai warna in-product Linear (Known Gaps).
 - `constants/data.ts`
 - `constants/styles.ts`
 - `context/ThemeContext.tsx` (ContextTema)
+- `types/api.ts`
+- `utils/delay.ts`
+- `services/tiketService.ts`
+- `components/Loading.tsx`
+- `components/ErrorMessage.tsx`
 
 ## Modul 2
 Modul 2 mengizinkan expo-router (Stack, Link, router), React Hooks (useState, useEffect, useMemo, useContext, useRef), dan Context API.
 `useColorScheme` dari react-native boleh dipakai untuk membaca tema perangkat pada ContextTema.
+
+## Modul 3
+Modul 3 mengizinkan fetch ke API eksternal, Promise (new Promise, resolve, reject), async/await, .then()/.catch()/.finally(), dan ActivityIndicator dari react-native. Data tiket berasal dari API https://resolveu-api.ricoagista.workers.dev (GET /tiket). Library tambahan (axios, AsyncStorage, dsb) tetap dilarang.
