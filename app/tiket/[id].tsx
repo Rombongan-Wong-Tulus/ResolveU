@@ -17,7 +17,6 @@ export default function DetailTiket() {
     ? statusBerikutnya(tiketDitemukan.status)
     : null;
 
-  // Router kembali ke halaman sebelumnya; kalau tidak ada riwayat, ganti ke daftar.
   const kembali = () => {
     if (router.canGoBack()) router.back();
     else router.replace("/");
