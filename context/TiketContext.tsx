@@ -1,16 +1,41 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { Status, Tiket, tiketAwal } from "../constants/data";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { Status, Tiket } from "../constants/data";
+import { muatTiket } from "../services/tiketService";
 
 interface TiketContextValue {
   tiket: Tiket[];
+  loading: boolean;
+  error: string;
+  muatUlang: () => void;
   tambahTiket: (tiket: Tiket) => void;
   ubahStatus: (id: string, status: Status) => void;
+  pesan: string;
+  setPesan: (pesan: string) => void;
 }
 
 const TiketContext = createContext<TiketContextValue | undefined>(undefined);
 
 export function TiketProvider({ children }: { children: ReactNode }) {
-  const [tiket, setTiket] = useState<Tiket[]>(tiketAwal);
+  // State data tiket, indikator loading, dan pesan error dari API.
+  const [tiket, setTiket] = useState<Tiket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [pesan, setPesan] = useState("");
+
+  // Memuat data tiket dari API menggunakan service muatTiket.
+  const muatUlang = () => {
+    setLoading(true);
+    setError("");
+    muatTiket()
+      .then((data) => setTiket(data))
+      .catch((err: Error) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  // Panggil muatUlang saat aplikasi pertama kali dibuka.
+  useEffect(() => {
+    muatUlang();
+  }, []);
 
   const tambahTiket = (tiketBaru: Tiket) => {
     setTiket((tiketSaatIni) => [tiketBaru, ...tiketSaatIni]);
@@ -23,7 +48,18 @@ export function TiketProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <TiketContext.Provider value={{ tiket, tambahTiket, ubahStatus }}>
+    <TiketContext.Provider
+      value={{
+        tiket,
+        loading,
+        error,
+        muatUlang,
+        tambahTiket,
+        ubahStatus,
+        pesan,
+        setPesan,
+      }}
+    >
       {children}
     </TiketContext.Provider>
   );
