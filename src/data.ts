@@ -16,7 +16,7 @@ export interface Tiket {
 export const daftarTiket: Tiket[] = [
   {
     id: "1",
-    nama: "Andi Pratama",
+    nama: "Dimas Penceng",
     ruangan: "Lab 1",
     kategori: "WiFi",
     deskripsi: "WiFi tidak bisa connect di Lab 1, muncul error authentication failed",
