@@ -305,6 +305,51 @@ export function buatStyles(colors: Palet) {
       fontSize: 14,
       fontWeight: "600",
     },
+    loginContainer: {
+      flex: 1,
+      justifyContent: "center",
+      padding: 20,
+    },
+    loginCard: {
+      padding: 20,
+      backgroundColor: colors.surface1,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderRadius: 12,
+    },
+    loginTitle: {
+      marginBottom: 4,
+      color: colors.ink,
+      fontSize: 22,
+      fontWeight: "600",
+      letterSpacing: -0.4,
+    },
+    loginSubtitle: {
+      marginBottom: 20,
+      color: colors.inkSubtle,
+      fontSize: 14,
+    },
+    loginToggle: {
+      alignItems: "center",
+      padding: 12,
+    },
+    loginMessage: {
+      marginBottom: 12,
+      color: colors.inkMuted,
+      fontSize: 14,
+    },
+    signOutButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderRadius: 8,
+    },
+    signOutText: {
+      color: colors.inkMuted,
+      fontSize: 12,
+      fontWeight: "600",
+    },
   });
 }
 
