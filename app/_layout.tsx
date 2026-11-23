@@ -1,11 +1,18 @@
-import { Stack } from "expo-router";
+import { Redirect, Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, Text } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import { TiketProvider } from "../context/TiketContext";
 import { ThemeProvider, useTema } from "../context/ThemeContext";
 import { buatHeaderOptions } from "../constants/styles";
 
 // Tombol kecil di header untuk berpindah tema terang/gelap.
+function TombolKeluar() {
+  const { signOut } = useAuth();
+  const { styles } = useTema();
+  return <Pressable accessibilityRole="button" onPress={signOut} style={styles.themeButton}><Text style={styles.themeButtonText}>Keluar</Text></Pressable>;
+}
+
 function TombolTema() {
   const { darkMode, toggleTema, styles } = useTema();
 
@@ -23,25 +30,33 @@ function TombolTema() {
 }
 
 // Komponen dalam: butuh useTema() sehingga berada di dalam ThemeProvider.
-function StackTema() {
+function AuthGuard() {
+  const segments = useSegments();
+  const { isLoading, session } = useAuth();
+  const inAuth = segments[0] === "(auth)" || segments[0] === "login";
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (!session && !inAuth) return <Redirect href="/login" />;
+  if (session && inAuth) return <Redirect href="/" />;
+  return <AuthenticatedStack />;
+}
+
+function AuthenticatedStack() {
   const { darkMode, colors } = useTema();
 
   return (
     <>
       <StatusBar style={darkMode ? "light" : "dark"} />
       <Stack screenOptions={buatHeaderOptions(colors)}>
-        <Stack.Screen
-          name="index"
-          options={{
-            title: "ResolveU",
-            headerRight: () => <TombolTema />,
-          }}
-        />
-        <Stack.Screen
-          name="buat"
-          options={{ title: "Buat Tiket", presentation: "modal" }}
-        />
-        <Stack.Screen name="tiket/[id]" options={{ title: "Detail Tiket" }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
         <Stack.Screen
           name="[...unmatched]"
           options={{ title: "Tidak Ditemukan" }}
@@ -54,9 +69,11 @@ function StackTema() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <TiketProvider>
-        <StackTema />
-      </TiketProvider>
+      <AuthProvider>
+        <TiketProvider>
+          <AuthGuard />
+        </TiketProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

@@ -1,14 +1,16 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Status, Tiket } from "../constants/data";
-import { muatTiket } from "../services/tiketService";
+import { useAuth } from "./AuthContext";
+import { ambilTiketSaya, buatTiketBaru, hapusTiket, ubahStatusTiket } from "../services/tiketSupabase";
 
 interface TiketContextValue {
   tiket: Tiket[];
   loading: boolean;
   error: string;
   muatUlang: () => void;
-  tambahTiket: (tiket: Tiket) => void;
-  ubahStatus: (id: string, status: Status) => void;
+  tambahTiket: (input: Pick<Tiket, "nama" | "ruangan" | "deskripsi" | "kategori">) => Promise<void>;
+  ubahStatus: (id: string, status: Status) => Promise<void>;
+  hapus: (id: string) => Promise<void>;
   pesan: string;
   setPesan: (pesan: string) => void;
 }
@@ -21,12 +23,17 @@ export function TiketProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [pesan, setPesan] = useState("");
+  const { session } = useAuth();
 
-  // Memuat data tiket dari API menggunakan service muatTiket.
   const muatUlang = () => {
+    if (!session) {
+      setTiket([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError("");
-    muatTiket()
+    ambilTiketSaya()
       .then((data) => setTiket(data))
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
@@ -35,16 +42,33 @@ export function TiketProvider({ children }: { children: ReactNode }) {
   // Panggil muatUlang saat aplikasi pertama kali dibuka.
   useEffect(() => {
     muatUlang();
-  }, []);
+  }, [session?.user.id]);
 
-  const tambahTiket = (tiketBaru: Tiket) => {
-    setTiket((tiketSaatIni) => [tiketBaru, ...tiketSaatIni]);
+  const tambahTiket = async (input: Pick<Tiket, "nama" | "ruangan" | "deskripsi" | "kategori">) => {
+    const baru = await buatTiketBaru(input);
+    setTiket((saatIni) => [baru, ...saatIni]);
   };
 
-  const ubahStatus = (id: string, status: Status) => {
-    setTiket((tiketSaatIni) =>
-      tiketSaatIni.map((item) => (item.id === id ? { ...item, status } : item)),
-    );
+  const ubahStatus = async (id: string, status: Status) => {
+    const sebelumnya = tiket;
+    setTiket((saatIni) => saatIni.map((item) => (item.id === id ? { ...item, status } : item)));
+    try {
+      await ubahStatusTiket(id, status);
+    } catch (err) {
+      setTiket(sebelumnya);
+      throw err;
+    }
+  };
+
+  const hapus = async (id: string) => {
+    const sebelumnya = tiket;
+    setTiket((saatIni) => saatIni.filter((item) => item.id !== id));
+    try {
+      await hapusTiket(id);
+    } catch (err) {
+      setTiket(sebelumnya);
+      throw err;
+    }
   };
 
   return (
@@ -56,6 +80,7 @@ export function TiketProvider({ children }: { children: ReactNode }) {
         muatUlang,
         tambahTiket,
         ubahStatus,
+        hapus,
         pesan,
         setPesan,
       }}

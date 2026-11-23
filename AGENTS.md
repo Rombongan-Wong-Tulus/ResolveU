@@ -79,3 +79,29 @@ Modul 2 mengizinkan expo-router (Stack, Link, router), React Hooks (useState, us
 
 ## Modul 3
 Modul 3 mengizinkan fetch ke API eksternal, Promise (new Promise, resolve, reject), async/await, .then()/.catch()/.finally(), dan ActivityIndicator dari react-native. Data tiket berasal dari API https://resolveu-api.ricoagista.workers.dev (GET /tiket). Library tambahan (axios, AsyncStorage, dsb) tetap dilarang.
+
+## Modul 4
+Modul 4 mengizinkan `@supabase/supabase-js` dan `expo-secure-store` untuk Supabase Auth, Postgres (tabel tiket), dan Row Level Security (RLS). Token wajib memakai adapter SecureStore, bukan `AsyncStorage` atau penyimpanan token manual.
+
+React Context diizinkan untuk `AuthContext`, termasuk state sesi global. `useSegments`, `Redirect`, dan `RefreshControl` dari Expo Router/React Native juga diizinkan.
+
+Auth dan tiket cloud wajib mengikuti `services/supabase.ts`, `services/tiketSupabase.ts`, schema Supabase, serta kebijakan RLS yang ada. Jangan membuat backend atau sistem auth sendiri. Tetap patuhi seluruh aturan styling dan token dari `DESIGN.md`.
+
+### Struktur file Modul 4
+- `app/_layout.tsx`
+- `app/(auth)/_layout.tsx`
+- `app/(auth)/login.tsx`
+- `app/(app)/index.tsx`
+- `app/(app)/buat.tsx`
+- `app/(app)/tiket/[id].tsx`
+- `app/(app)/pengaturan.tsx`
+- `app/[...unmatched].tsx`
+- `context/AuthContext.tsx`
+- `context/TiketContext.tsx`
+- `asset/SecureVaultDemo.tsx`
+- `services/supabase.ts`
+- `services/tiketSupabase.ts`
+- `services/secureStorage.ts`
+- `types/database.ts`
+- `supabase/schema.sql`
+- `.env.example`

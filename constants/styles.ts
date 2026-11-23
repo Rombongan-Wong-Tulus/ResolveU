@@ -285,9 +285,44 @@ export function buatStyles(colors: Palet) {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      gap: 16,
-      padding: 20,
+      padding: 24,
+      backgroundColor: colors.canvas,
     },
+    authContent: {
+      width: "100%",
+      maxWidth: 420,
+      padding: 24,
+      backgroundColor: colors.surface1,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderRadius: 12,
+    },
+    authBrand: {
+      alignItems: "center",
+      marginBottom: 28,
+    },
+    authTitle: {
+      color: colors.ink,
+      fontSize: 28,
+      fontWeight: "600",
+      letterSpacing: -0.6,
+    },
+    authSubtitle: {
+      marginTop: 8,
+      color: colors.inkSubtle,
+      fontSize: 14,
+      textAlign: "center",
+    },
+    authForm: {
+      width: "100%",
+      gap: 12,
+    },
+    authToggle: {
+      alignItems: "center",
+      marginTop: 20,
+      paddingVertical: 8,
+    },
+
     linkText: {
       color: colors.primary,
       fontSize: 14,

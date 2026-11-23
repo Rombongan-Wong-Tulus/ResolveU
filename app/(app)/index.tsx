@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { isStatus, STATUS, Status, Tiket } from "../constants/data";
-import { useTiket } from "../context/TiketContext";
-import { useTema } from "../context/ThemeContext";
-import { STATUS_COLORS } from "../constants/styles";
-import { Loading } from "../components/Loading";
-import { ErrorMessage } from "../components/ErrorMessage";
+import { isStatus, STATUS, Status, Tiket } from "../../constants/data";
+import { useTiket } from "../../context/TiketContext";
+import { useTema } from "../../context/ThemeContext";
+import { STATUS_COLORS } from "../../constants/styles";
+import { Loading } from "../../components/Loading";
+import { ErrorMessage } from "../../components/ErrorMessage";
 
 const OPSI_FILTER = ["Semua", ...STATUS] as const;
 type FilterStatus = (typeof OPSI_FILTER)[number];
@@ -106,6 +106,7 @@ export default function Index() {
         contentContainerStyle={styles.container}
         data={tiketTersaring}
         keyExtractor={(item) => item.id}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={muatUlang} />}
         ListHeaderComponent={
           <View>
             <View style={styles.header}>

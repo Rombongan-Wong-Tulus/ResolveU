@@ -1,18 +1,18 @@
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { statusBerikutnya } from "../../constants/data";
-import { useTiket } from "../../context/TiketContext";
-import { useTema } from "../../context/ThemeContext";
-import { STATUS_COLORS } from "../../constants/styles";
-import { Loading } from "../../components/Loading";
+import { statusBerikutnya } from "../../../constants/data";
+import { useTiket } from "../../../context/TiketContext";
+import { useTema } from "../../../context/ThemeContext";
+import { STATUS_COLORS } from "../../../constants/styles";
+import { Loading } from "../../../components/Loading";
 
 export default function DetailTiket() {
   // Hook mengambil id dari URL, misal /tiket/1 -> "1".
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { styles } = useTema();
-  const { tiket, loading, ubahStatus, setPesan } = useTiket();
+  const { tiket, loading, ubahStatus, hapus, setPesan } = useTiket();
   const tiketDitemukan = tiket.find((item) => item.id === id);
   const statusSelanjutnya = tiketDitemukan
     ? statusBerikutnya(tiketDitemukan.status)
@@ -24,10 +24,24 @@ export default function DetailTiket() {
   };
 
   // Status diperbarui bersama notifikasi untuk ditampilkan di daftar.
-  const perbaruiStatus = () => {
+  const perbaruiStatus = async () => {
     if (!tiketDitemukan || !statusSelanjutnya) return;
-    ubahStatus(tiketDitemukan.id, statusSelanjutnya);
-    setPesan("Status tiket diperbarui");
+    try {
+      await ubahStatus(tiketDitemukan.id, statusSelanjutnya);
+      setPesan("Status tiket diperbarui");
+    } catch (err) {
+      setPesan(err instanceof Error ? err.message : "Status gagal diperbarui.");
+    }
+  };
+
+  const hapusTiket = async () => {
+    if (!tiketDitemukan) return;
+    try {
+      await hapus(tiketDitemukan.id);
+      router.replace("/");
+    } catch (err) {
+      setPesan(err instanceof Error ? err.message : "Tiket gagal dihapus.");
+    }
   };
 
   // Tampilkan indikator saat data tiket sedang dimuat dari API.
@@ -87,6 +101,13 @@ export default function DetailTiket() {
               <Text style={styles.submitText}>Ubah ke {statusSelanjutnya}</Text>
             </Pressable>
           )}
+          <Pressable
+            accessibilityRole="button"
+            onPress={hapusTiket}
+            style={styles.secondaryButton}
+          >
+            <Text style={styles.secondaryText}>Hapus</Text>
+          </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={kembali}

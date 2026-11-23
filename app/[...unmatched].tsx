@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useSegments } from "expo-router";
+import { useAuth } from "../context/AuthContext";
 import { useTema } from "../context/ThemeContext";
 
 export default function HalamanTidakDitemukan() {
@@ -8,7 +10,11 @@ export default function HalamanTidakDitemukan() {
   const { unmatched } = useLocalSearchParams<{ unmatched: string[] }>();
   const path = Array.isArray(unmatched) ? `/${unmatched.join("/")}` : "/";
   const router = useRouter();
+  const segments = useSegments();
+  const { session, isLoading } = useAuth();
   const { styles } = useTema();
+
+  if (isLoading || segments[0] === "(auth)" || segments[0] === "(app)") return null;
 
   // Router mengganti URL yang tidak dikenal dengan halaman utama.
   const kembaliKeBeranda = () => router.replace("/");
