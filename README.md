@@ -174,6 +174,76 @@ npx tsc --noEmit
 npx expo export --platform web --output-dir /tmp/resolveu-check
 ```
 
+## Modul 4: Database dan Autentikasi
+
+Modul 4 menambahkan autentikasi Supabase, penyimpanan sesi dengan `expo-secure-store`, route protection, serta CRUD tiket berbasis Postgres dan RLS.
+
+### Alur autentikasi
+
+- `context/AuthContext.tsx` menyediakan `user`, `session`, `isLoading`, dan `signOut()` secara global.
+- Saat aplikasi dibuka, `supabase.auth.getSession()` memulihkan sesi yang tersimpan.
+- `supabase.auth.onAuthStateChange()` memperbarui state untuk login, logout, dan refresh token.
+- Route group `app/(auth)` berisi halaman login/register.
+- Route group `app/(app)` berisi daftar tiket, form tiket, dan detail tiket.
+- Route guard menampilkan loading saat sesi diperiksa, mengarahkan pengguna yang belum login ke login, dan mengarahkan pengguna yang sudah login ke aplikasi.
+- Tombol `Keluar` memakai `supabase.auth.signOut()`. Token tidak dihapus secara manual.
+
+### Penyimpanan token
+
+`services/secureStorage.ts` memakai `expo-secure-store` untuk menyimpan sesi Supabase pada perangkat. Adapter tersebut digunakan oleh singleton client di `services/supabase.ts`. `AsyncStorage` tidak digunakan untuk token atau sesi.
+
+Aplikasi juga menyediakan fungsi demo `saveAuthToken`, `getAuthToken`, dan `deleteAuthToken` untuk memperlihatkan proses simpan, muat, dan hapus token secara eksplisit. Kredensial Supabase tetap dibaca dari `.env` melalui `EXPO_PUBLIC_SUPABASE_URL` dan `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
+
+### Tiket cloud dan RLS
+
+`context/TiketContext.tsx` mengambil data melalui `ambilTiketSaya()` dari `services/tiketSupabase.ts`, bukan lagi dari API Cloudflare. Data tiket dikosongkan ketika pengguna logout dan dimuat ulang ketika pengguna berubah.
+
+- Create memakai `buatTiketBaru()` tanpa mengirim `user_id` dari klien.
+- Database mengisi `user_id` dengan `auth.uid()`.
+- Update status memakai `ubahStatusTiket()`.
+- Delete memakai `hapusTiket()`.
+- Update dan delete memakai optimistic UI dengan rollback jika Supabase mengembalikan error.
+- Daftar tiket mendukung pull-to-refresh melalui `RefreshControl`.
+
+RLS pada `supabase/schema.sql` membatasi SELECT, INSERT, UPDATE, dan DELETE berdasarkan `auth.uid()`. Karena itu, setiap akun hanya dapat melihat dan mengubah tiket miliknya sendiri. Akun baru dimulai dengan daftar tiket kosong.
+
+### Setup Supabase
+
+1. Salin `.env.example` menjadi `.env`.
+2. Isi URL project dan anon key Supabase. Jangan memakai `service_role` key di aplikasi.
+3. Buat akun pengujian `rico@rico.rico` melalui Supabase Auth Dashboard dengan password yang ditentukan untuk demo.
+4. Jalankan `supabase/schema.sql` melalui SQL Editor Supabase.
+5. Pastikan Confirm email dimatikan untuk pengujian lokal agar akun demo dapat langsung digunakan.
+6. Uji dengan dua akun untuk memastikan RLS mengisolasi data tiket.
+
+Schema menyediakan seed 100.000 tiket untuk akun Rico menggunakan `generate_series()`. Seed tersebut hanya dapat dijalankan setelah akun Rico sudah ada di Auth karena query mencari UUID dari `auth.users`. Pengguna lain tidak dapat melihat seed tersebut dan akan mulai tanpa tiket.
+
+### Struktur Modul 4
+
+```text
+app/
+├── (auth)/
+│   ├── _layout.tsx
+│   └── login.tsx
+├── (app)/
+│   ├── _layout.tsx
+│   ├── index.tsx
+│   ├── buat.tsx
+│   └── tiket/[id].tsx
+├── _layout.tsx
+└── [...unmatched].tsx
+context/
+├── AuthContext.tsx
+├── ThemeContext.tsx
+└── TiketContext.tsx
+services/
+├── secureStorage.ts
+├── supabase.ts
+└── tiketSupabase.ts
+supabase/
+└── schema.sql
+```
+
 ## Supabase dan penyimpanan sesi
 
 Salin `.env.example` menjadi `.env`, lalu isi URL project Supabase dan anon key

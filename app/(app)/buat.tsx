@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import type { ComponentRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { isKategori, KATEGORI, Kategori, Tiket } from "../constants/data";
-import { useTiket } from "../context/TiketContext";
-import { useTema } from "../context/ThemeContext";
+import { isKategori, KATEGORI } from "../../constants/data";
+import { useTiket } from "../../context/TiketContext";
+import { useTema } from "../../context/ThemeContext";
 
 interface FormTiket {
   nama: string;
@@ -37,17 +38,6 @@ function formValid(form: FormTiket) {
   );
 }
 
-function buatTiket(form: FormTiket, kategori: Kategori): Tiket {
-  return {
-    id: Date.now().toString(),
-    nama: form.nama.trim(),
-    ruangan: form.ruangan.trim(),
-    deskripsi: form.deskripsi.trim(),
-    kategori,
-    status: "Open",
-  };
-}
-
 interface FormTiketViewProps {
   form: FormTiket;
   onChange: (field: keyof FormTiket, value: string) => void;
@@ -55,9 +45,9 @@ interface FormTiketViewProps {
   onCancel: () => void;
   isValid: boolean;
   errorMsg: string;
-  refNama: RefObject<TextInput | null>;
-  refRuangan: RefObject<TextInput | null>;
-  refDeskripsi: RefObject<TextInput | null>;
+  refNama: RefObject<ComponentRef<typeof TextInput> | null>;
+  refRuangan: RefObject<ComponentRef<typeof TextInput> | null>;
+  refDeskripsi: RefObject<ComponentRef<typeof TextInput> | null>;
 }
 
 function FormTiketView({
@@ -176,9 +166,9 @@ export default function Buat() {
   const [form, setForm] = useState<FormTiket>(FORM_AWAL);
   const [submitted, setSubmitted] = useState(false);
   
-  const refNama = useRef<TextInput>(null);
-  const refRuangan = useRef<TextInput>(null);
-  const refDeskripsi = useRef<TextInput>(null);
+  const refNama = useRef<ComponentRef<typeof TextInput>>(null);
+  const refRuangan = useRef<ComponentRef<typeof TextInput>>(null);
+  const refDeskripsi = useRef<ComponentRef<typeof TextInput>>(null);
 
   useEffect(() => {
     if (submitted) setSubmitted(false);
@@ -190,12 +180,22 @@ export default function Buat() {
     setForm((current) => ({ ...current, [field]: value }));
 
   // Router menutup modal setelah tiket valid ditambahkan.
-  const kirimTiket = () => {
+  const kirimTiket = async () => {
     setSubmitted(true);
     if (!valid || !isKategori(form.kategori)) return;
-    tambahTiket(buatTiket(form, form.kategori));
-    setPesan("Tiket berhasil dikirim");
-    router.dismiss();
+    try {
+      await tambahTiket({
+        nama: form.nama.trim(),
+        ruangan: form.ruangan.trim(),
+        deskripsi: form.deskripsi.trim(),
+        kategori: form.kategori,
+      });
+      setPesan("Tiket berhasil dikirim");
+      router.dismiss();
+    } catch (err) {
+      setSubmitted(true);
+      setPesan(err instanceof Error ? err.message : "Tiket gagal dikirim.");
+    }
   };
 
   const batal = () => router.dismiss();
