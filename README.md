@@ -173,3 +173,39 @@ Setelah kirim valid atau status berubah, banner notifikasi tampil selama 2,5 det
 npx tsc --noEmit
 npx expo export --platform web --output-dir /tmp/resolveu-check
 ```
+
+## Supabase dan penyimpanan sesi
+
+Salin `.env.example` menjadi `.env`, lalu isi URL project Supabase dan anon key
+Anda sendiri. Jangan masukkan `service_role` key ke aplikasi. Jalankan
+`supabase/schema.sql` melalui SQL Editor Supabase untuk membuat tabel tiket
+beserta Row Level Security (RLS). Layanan Supabase baru berada di
+`services/tiketSupabase.ts`; `services/tiketService.ts` dan alur aplikasi lama
+belum dialihkan ke layanan baru.
+
+Pada iOS dan Android, sesi Supabase dan token auth disimpan menggunakan
+`expo-secure-store`. Nilai sesi dipecah menjadi bagian-bagian kecil karena
+SecureStore mempunyai batas ukuran per nilai (sekitar 2 KB pada iOS); ini
+menghindari kegagalan menyimpan JWT panjang tanpa memindahkan token ke
+penyimpanan biasa.
+
+SecureStore tidak tersedia di web. Sebagai fallback agar `npm run web` tetap
+bisa memakai Supabase, adapter menggunakan `localStorage`. Browser `localStorage`
+tidak memberikan perlindungan enkripsi setingkat Keychain/Keystore dan dapat
+diakses JavaScript halaman, sehingga sesi web lebih terekspos jika terjadi
+XSS. Jangan menganggap fallback web setara amannya dengan penyimpanan native.
+
+### Kebijakan RLS tiket
+
+- **SELECT** hanya menampilkan baris dengan `user_id` yang sama dengan pengguna
+  yang sedang login.
+- **INSERT** hanya menerima baris yang `user_id`-nya sama dengan pengguna login.
+  Aplikasi tidak mengirim `user_id`; nilai default `auth.uid()` mengisinya.
+- **UPDATE** memeriksa pemilik sebelum mengubah (`USING`) dan memastikan hasil
+  perubahan tetap dimiliki pengguna yang sama (`WITH CHECK`).
+- **DELETE** hanya mengizinkan penghapusan baris milik pengguna login.
+
+`auth.uid()` adalah UUID pengguna dari JWT sesi Supabase yang sedang aktif.
+Karena itu, klien tidak dapat memilih identitas pengguna lain untuk membaca,
+membuat, mengubah, atau menghapus tiket. Semua kebijakan hanya berlaku untuk
+role `authenticated`.
